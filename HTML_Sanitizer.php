@@ -42,7 +42,7 @@ class HTML_Sanitizer
     private $_allowScript;
     private $_allowStyle;
     private $_additionalTags;
-    
+
     /**
      * Constructor
      */
@@ -50,7 +50,7 @@ class HTML_Sanitizer
     {
         $this->resetAll();
     }
-    
+
     /**
      * (re)set all options to default value
      */
@@ -69,10 +69,10 @@ class HTML_Sanitizer
             . '<pre><br><blockquote><address><code><caption><abbr><acronym>'
             . '<cite><dfn><q><ins><sup><sub><kbd><samp><var><tt><small><big>'
             ;
-            
+
         $this->_additionalTags = '';
     }
-    
+
     /**
      * Add additional tags to allowed tags
      * @param string
@@ -98,7 +98,7 @@ class HTML_Sanitizer
      */
     public function allowHtml5Media()
     {
-        $this->addAdditionalTags( '<canvas><video><audio>' );
+        $this->addAdditionalTags( '<canvas><video><audio><source><track>' );
     }
 
     /**
@@ -109,7 +109,7 @@ class HTML_Sanitizer
     {
         $this->_allowObjects = true;
     }
-    
+
     /**
      * Allow DOM event on DOM elements
      * @access public
@@ -118,7 +118,7 @@ class HTML_Sanitizer
     {
         $this->_allowDOMEvents = true;
     }
-    
+
     /**
      * Allow script tags
      * @access public
@@ -127,7 +127,7 @@ class HTML_Sanitizer
     {
         $this->_allowScript = true;
     }
-    
+
     /**
      * Allow the use of javascript: in urls
      * @access public
@@ -136,7 +136,7 @@ class HTML_Sanitizer
     {
         $this->_allowJavascriptInUrls = true;
     }
-    
+
     /**
      * Allow style tags and attributes
      * @access public
@@ -145,7 +145,7 @@ class HTML_Sanitizer
     {
         $this->_allowStyle = true;
     }
-    
+
     /**
      * Helper to allow all javascript related tags and attributes
      * @access public
@@ -156,7 +156,7 @@ class HTML_Sanitizer
         $this->allowScript();
         $this->allowJavascriptInUrls();
     }
-    
+
     /**
      * Allow all tags and attributes
      * @access public
@@ -169,7 +169,7 @@ class HTML_Sanitizer
         $this->allowIframes();
         $this->allowHtml5Media();
     }
-    
+
     /**
      * Filter URLs to avoid HTTP response splitting attacks
      * @access  public
@@ -181,7 +181,7 @@ class HTML_Sanitizer
         $dangerousCharactersPattern = '~(\r\n|\r|\n|%0a|%0d|%0D|%0A)~';
         return preg_replace( $dangerousCharactersPattern, '', $url );
     }
-    
+
     /**
      * Remove potential javascript in urls
      * @access  public
@@ -198,7 +198,7 @@ class HTML_Sanitizer
 
         return $str;
     }
-    
+
     /**
      * Remove potential flaws in urls
      * @access  private
@@ -211,12 +211,12 @@ class HTML_Sanitizer
         {
             $url = $this->removeJavascriptURL( $url );
         }
-        
+
         $url = $this->filterHTTPResponseSplitting( $url );
 
         return $url;
     }
-    
+
     /**
      * Callback for PCRE
      * @access private
@@ -228,7 +228,7 @@ class HTML_Sanitizer
     {
         return 'href="'.$this->sanitizeURL( $matches[1] ).'"';
     }
-    
+
     /**
      * Remove potential flaws in href attributes
      * @access  private
@@ -243,7 +243,7 @@ class HTML_Sanitizer
             , array( &$this, '_sanitizeURLCallback' )
             , $str );
     }
-    
+
     /**
      * Callback for PCRE
      * @access private
@@ -255,7 +255,7 @@ class HTML_Sanitizer
     {
         return 'src="'.$this->sanitizeURL( $matches[1] ).'"';
     }
-    
+
     /**
      * Remove potential flaws in href attributes
      * @access  private
@@ -270,7 +270,7 @@ class HTML_Sanitizer
             , array( &$this, '_sanitizeSrcCallback' )
             , $str );
     }
-    
+
     /**
      * Remove dangerous attributes from html tags
      * @access  private
@@ -285,17 +285,17 @@ class HTML_Sanitizer
                 , array( &$this, '_removeDOMEventsCallback' )
                 , $str );
         }
-        
+
         if ( ! $this->_allowStyle )
         {
             $str = preg_replace_callback('/<(.*?)>/i'
                 , array( &$this, '_removeStyleCallback' )
                 , $str );
         }
-            
+
         return $str;
     }
-    
+
     /**
      * Remove DOM events attributes from html tags
      * @access  private
@@ -317,7 +317,7 @@ class HTML_Sanitizer
 
         return $str;
     }
-    
+
     /**
      * Callback for PCRE
      * @access private
@@ -329,7 +329,7 @@ class HTML_Sanitizer
     {
         return '<' . $this->removeDOMEvents( $matches[1] ) . '>';
     }
-    
+
     /**
      * Remove style attributes from html tags
      * @access  private
@@ -349,7 +349,7 @@ class HTML_Sanitizer
 
         return $str;
     }
-    
+
     /**
      * Callback for PCRE
      * @access private
@@ -361,7 +361,7 @@ class HTML_Sanitizer
     {
         return '<' . $this->removeStyle( $matches[1] ) . '>';
     }
-    
+
     /**
      * Remove dangerous HTML tags
      * @access  private
@@ -371,29 +371,29 @@ class HTML_Sanitizer
     private function removeEvilTags( $str )
     {
         $allowedTags = $this->_allowedTags;
-        
+
         if ( $this->_allowScript )
         {
             $allowedTags .= '<script>';
         }
-        
+
         if ( $this->_allowStyle )
         {
             $allowedTags .= '<style>';
         }
-        
+
         if ( $this->_allowObjects )
         {
             $allowedTags .= '<object><embed><applet><param>';
         }
-        
+
         $allowedTags .= $this->_additionalTags;
-        
+
         $str = strip_tags($str, $allowedTags );
 
         return $str;
     }
-    
+
     /**
      * Sanitize HTML
      *  remove dangerous tags and attributes
@@ -405,13 +405,13 @@ class HTML_Sanitizer
     public function sanitize( $html )
     {
         $html = $this->removeEvilTags( $html );
-        
+
         $html = $this->removeEvilAttributes( $html );
-        
+
         $html = $this->sanitizeHref( $html );
-        
+
         $html = $this->sanitizeSrc( $html );
-        
+
         return $html;
     }
 }
