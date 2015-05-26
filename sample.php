@@ -27,7 +27,7 @@
     # along with HTML Sanitizer; if not, see <http://www.gnu.org/licenses/>.
     #
     # ***** END LICENSE BLOCK *****
-    
+
     /**
      * @author  Frederic Minne <zefredz@gmail.com>
      * @copyright Copyright &copy; 2005-2011, Frederic Minne
@@ -36,8 +36,8 @@
      * @package HTML
      */
 
-    require_once dirname(__FILE__) . '/sanitizer.class.php';
-    
+    require_once dirname(__FILE__) . '/HTML_Sanitizer.php';
+
     $test = '<p>Hello</p><script type="text/javascript">alert("plop !")</script>'
         . '<a href="javascript:alert(\'plop !\')">click me!</a>'
         . '<a href="" onclick="alert(\'plop !\');return false;">click me too !</a>'
@@ -51,7 +51,7 @@
     echo '<pre>';
     echo htmlspecialchars( $test );
     echo '</pre>';
-    #echo $test; 
+    #echo $test;
     echo "\n";
 
     echo '<h1>Default sanitizer options</h1>';
@@ -70,7 +70,7 @@
     echo '<pre>';
     echo htmlspecialchars( $san->sanitize( $test ) );
     echo '</pre>';
-    #echo $san->sanitize( $test ); 
+    #echo $san->sanitize( $test );
     echo "\n";
 
     echo '<h1>Loose sanitization</h1>';
@@ -79,7 +79,7 @@
     echo '<pre>';
     echo htmlspecialchars( $san->sanitize( $test ) );
     echo '</pre>';
-    #echo $san->sanitize( $test ); 
+    #echo $san->sanitize( $test );
     echo "\n";
 
 ?>
